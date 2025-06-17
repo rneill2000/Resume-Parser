@@ -73,3 +73,19 @@ def main():
                 return
 
             with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
+                doc = create_resume_doc(
+                    name,
+                    summary,
+                    certifications_list,
+                    skills_list,
+                    experience_list,
+                    education_list,
+                    "fulllogo_transparent.png"  # Change or upload your logo file here
+                )
+                doc.save(tmp_file.name)
+                tmp_file.seek(0)
+                st.success("Resume generated!")
+                st.download_button("Download Resume DOCX", tmp_file.read(), file_name="formatted_resume.docx")
+
+if __name__ == "__main__":
+    main()
