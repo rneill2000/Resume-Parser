@@ -4,7 +4,7 @@ import json
 from format_resume import create_resume_doc
 
 def parse_resume_file(uploaded_file):
-    # Dummy parser - you can replace with your own parsing logic later
+    # For now, just return dummy parsed data
     return {
         "name": "Jane Doe",
         "summary": "Experienced Data Engineer with a passion for building scalable data pipelines.",
@@ -80,7 +80,7 @@ def main():
                     skills_list,
                     experience_list,
                     education_list,
-                    "fulllogo_transparent.png"  # Change or upload your logo file here
+                    "fulllogo_transparent.png"  # Update to your logo path or handle upload
                 )
                 doc.save(tmp_file.name)
                 tmp_file.seek(0)
