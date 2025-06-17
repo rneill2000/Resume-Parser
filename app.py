@@ -2,9 +2,9 @@ import streamlit as st
 import tempfile
 import json
 from format_resume import create_resume_doc
+
 def parse_resume_file(uploaded_file):
-    # For now, just return dummy parsed data
-    # You can later implement your parsing logic here
+    # Dummy parser - you can replace with your own parsing logic later
     return {
         "name": "Jane Doe",
         "summary": "Experienced Data Engineer with a passion for building scalable data pipelines.",
@@ -60,6 +60,7 @@ def main():
 
         skills = st.text_area("Skills (separate by |)", value=" | ".join(parsed_data["skills"]))
         skills_list = [x.strip() for x in skills.split("|")]
+
         experience_text = st.text_area("Experience (JSON format)", value=json.dumps(parsed_data["experience"], indent=2))
         education_text = st.text_area("Education (JSON format)", value=json.dumps(parsed_data["education"], indent=2))
 
@@ -72,18 +73,3 @@ def main():
                 return
 
             with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_file:
-                doc = create_resume_doc(
-                    name,
-                    summary,
-                    certifications_list,
-                    skills_list,
-                    experience_list,
-                    education_list,
-                    "fulllogo_transparent.png"  # Update to your logo path or handle upload
-                )
-                doc.save(tmp_file.name)
-                tmp_file.seek(0)
-                st.success("Resume generated!")
-                st.download_button("Download Resume DOCX", tmp_file.read(), file_name="formatted_resume.docx")
-if __name__ == "__main__":
-    main()
