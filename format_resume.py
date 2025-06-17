@@ -137,7 +137,7 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
         skills_run.font.name = 'Calibri'
         skills_run.font.size = Pt(11)
 
-    # EXPERIENCE Header
+    # EXPERIENCE Header with horizontal line
     exp_header = doc.add_paragraph()
     exp_header_run = exp_header.add_run("EXPERIENCE")
     exp_header_run.font.name = 'Calibri'
@@ -145,6 +145,7 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
     exp_header_run.font.bold = True
     exp_header_run.font.color.rgb = RGBColor(0, 0, 0)
     exp_header.paragraph_format.space_after = Pt(12)
+    insert_horizontal_line(exp_header, "#000000")
 
     # Experience entries
     for job in experience:
