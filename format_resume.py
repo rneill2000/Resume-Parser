@@ -12,20 +12,27 @@ def set_strict_page_margins_fixed(section, inches=1):
     section.left_margin = Inches(inches)
     section.right_margin = Inches(inches)
 
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
 def insert_horizontal_line(paragraph, hex_color):
-    run = paragraph.add_run()
-    run.add_break()
     p = paragraph._element
     pPr = p.get_or_add_pPr()
-    borders = pPr.xpath('./w:pBdr')
-    if borders:
-        pPr.remove(borders[0])
-    pBdr = pPr.add_new_pBdr()
-    bottom = pBdr.add_new_bottom()
-    bottom.val = "single"
-    bottom.sz = 12
-    bottom.color = hex_color.lstrip('#')
-    bottom.space = 0
+    # Remove existing borders if any
+    for border in pPr.findall(qn('w:pBdr')):
+        pPr.remove(border)
+
+    borders = OxmlElement('w:pBdr')
+
+    bottom = OxmlElement('w:bottom')
+    bottom.set(qn('w:val'), 'single')
+    bottom.set(qn('w:sz'), '4')  # thickness
+    bottom.set(qn('w:color'), hex_color.lstrip('#'))
+    bottom.set(qn('w:space'), '1')
+
+    borders.append(bottom)
+    pPr.append(borders)
+
 
 def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     from docx.oxml import parse_xml
