@@ -101,7 +101,7 @@ def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     exp_header_run.font.color.rgb = rgb_color_from_hex(hex_dark)
     insert_horizontal_line(exp_header, hex_dark)
 
-    # Experience entries
+      # Experience entries
     for job in experience:
         # Company, City, State & Date on same line with tab stops
         comp_para = doc.add_paragraph()
