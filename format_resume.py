@@ -102,20 +102,19 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
     insert_horizontal_line(exp_header, hex_dark)
 
     # Experience entries
-    for job in experience:
+      for job in experience:
         # Company, City, State & Date on same line with tab stops
         comp_para = doc.add_paragraph()
         comp_para.paragraph_format.tab_stops.add_tab_stop(Inches(5.5))
         comp_para.paragraph_format.space_before = Pt(2)
         comp_para.paragraph_format.space_after = Pt(0)
         comp_run = comp_para.add_run(
-    ", ".join(filter(None, [job.get('company'), job.get('city'), job.get('state')]))
-)
-comp_run.font.name = 'Calibri'
-comp_run.font.size = Pt(11)
-comp_run.font.bold = True
-comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-# Tab to date
+            ", ".join(filter(None, [job.get('company'), job.get('city'), job.get('state')]))
+        )
+        comp_run.font.name = 'Calibri'
+        comp_run.font.size = Pt(11)
+        comp_run.font.bold = True
+        comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
         # Tab to date
         comp_para.add_run("\t")
         date_run = comp_para.add_run(job.get('years', ''))
@@ -123,24 +122,7 @@ comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
         date_run.font.size = Pt(11)
         date_run.font.bold = True
         date_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-        # Job title (italic and colored)
-        title_para = doc.add_paragraph()
-        title_para.paragraph_format.space_before = Pt(0)
-        title_para.paragraph_format.space_after = Pt(3)
-        title_run = title_para.add_run(job.get('title', ''))
-        title_run.font.name = 'Calibri'
-        title_run.font.size = Pt(11)
-        title_run.font.italic = True
-        title_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-        # Bullet points
-        for bullet in job.get('bullets', []):
-            bullet_para = doc.add_paragraph(style='ListBullet')
-            bullet_para.paragraph_format.left_indent = Inches(0.25)
-            bullet_para.paragraph_format.space_before = Pt(2)
-            bullet_para.paragraph_format.space_after = Pt(2)
-            bullet_run = bullet_para.add_run(bullet)
-            bullet_run.font.name = 'Calibri'
-            bullet_run.font.size = Pt(10)
+        # ... rest of your code ...
 
     # Education Header
     edu_header = doc.add_paragraph()
