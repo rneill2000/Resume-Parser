@@ -1,3 +1,4 @@
+print("THIS IS THE FILE BEING RUN")
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
