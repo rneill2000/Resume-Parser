@@ -102,30 +102,27 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
     exp_header_run.font.color.rgb = rgb_color_from_hex(hex_dark)
     insert_horizontal_line(exp_header, hex_dark)
 
-    # Experience entries
-      for job in experience:
+      # Experience entries
+    for job in experience:
         # Company, City, State & Date on same line with tab stops
         comp_para = doc.add_paragraph()
         comp_para.paragraph_format.tab_stops.add_tab_stop(Inches(5.5))
         comp_para.paragraph_format.space_before = Pt(2)
         comp_para.paragraph_format.space_after = Pt(0)
-       comp_run = comp_para.add_run(
-    ", ".join(filter(None, [job.get('company'), job.get('city'), job.get('state')]))
-)
-comp_run.font.name = 'Calibri'
-comp_run.font.size = Pt(11)
-comp_run.font.bold = True
-comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-        # Tab to date
-        comp_para.add_run("\t")
-                comp_run = comp_para.add_run(
+        comp_run = comp_para.add_run(
             ", ".join(filter(None, [job.get('company'), job.get('city'), job.get('state')]))
         )
         comp_run.font.name = 'Calibri'
         comp_run.font.size = Pt(11)
         comp_run.font.bold = True
         comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-     comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
+        # Tab to date
+        comp_para.add_run("\t")
+        date_run = comp_para.add_run(job.get('years', ''))
+        date_run.font.name = 'Calibri'
+        date_run.font.size = Pt(11)
+        date_run.font.bold = True
+        date_run.font.color.rgb = rgb_color_from_hex(hex_teal)
 
     # Education Header
     edu_header = doc.add_paragraph()
