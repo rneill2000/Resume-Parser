@@ -12,20 +12,22 @@ def set_strict_page_margins_fixed(section, inches=1):
     section.left_margin = Inches(inches)
     section.right_margin = Inches(inches)
 
-def insert_horizontal_line(paragraph, hex_color):
-    run = paragraph.add_run()
-    run.add_break()
-    p = paragraph._element
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+def insert_horizontal_line(paragraph, color="auto"):
+    p = paragraph._p  # Access the internal lxml element
     pPr = p.get_or_add_pPr()
-    borders = pPr.xpath('./w:pBdr')
-    if borders:
-        pPr.remove(borders[0])
-    pBdr = pPr.add_new_pBdr()
-    bottom = pBdr.add_new_bottom()
-    bottom.val = "single"
-    bottom.sz = 12
-    bottom.color = hex_color.lstrip('#')
-    bottom.space = 0
+    pBdr = pPr.find(qn('w:pBdr'))
+    if pBdr is None:
+        pBdr = OxmlElement('w:pBdr')
+        pPr.append(pBdr)
+    bottom = OxmlElement('w:bottom')
+    bottom.set(qn('w:val'), 'single')
+    bottom.set(qn('w:sz'), '6')
+    bottom.set(qn('w:space'), '1')
+    bottom.set(qn('w:color'), color)
+    pBdr.append(bottom)
 
 def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     from docx.oxml import parse_xml
@@ -34,11 +36,9 @@ def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     section = doc.sections[0]
     header = section.header
     section.header_distance = Inches(0.15)
-
     for para in header.paragraphs:
         p = para._element
         p.getparent().remove(p)
-
     logo_para = header.add_paragraph()
     logo_para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
     logo_para.paragraph_format.left_indent = Inches(-0.7)
@@ -46,7 +46,6 @@ def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     logo_para.paragraph_format.space_after = Pt(0)
     run = logo_para.add_run()
     run.add_picture(logo_path, width=Inches(1))
-
     bar_para = header.add_paragraph()
     bar_para.paragraph_format.space_before = Pt(0)
     bar_para.paragraph_format.space_after = Pt(0)
@@ -54,20 +53,17 @@ def add_header_with_fully_flush_left_logo(doc, logo_path, bar_color_hex):
     bar_para.paragraph_format.right_indent = Inches(-0.7)
     bar_para.paragraph_format.line_spacing = Pt(1)
     bar_para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-
     border_xml = (
         f'<w:pBorders {nsdecls("w")}>'
         f'<w:bottom w:val="single" w:sz="40" w:color="{bar_color_hex.lstrip("#")}" w:space="0"/>'
         f'</w:pBorders>'
     )
     bar_para._p.get_or_add_pPr().append(parse_xml(border_xml))
-
     return doc
 
 def create_resume_doc(name, summary, certifications, skills, experience, education, logo_path):
     hex_teal = "#284b62"
     hex_dark = "#0b233b"
-
     doc = Document()
     set_strict_page_margins_fixed(doc.sections[0], inches=1)
 
@@ -112,32 +108,31 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
         comp_para.paragraph_format.tab_stops.add_tab_stop(Inches(5.5))
         comp_para.paragraph_format.space_before = Pt(2)
         comp_para.paragraph_format.space_after = Pt(0)
-        comp_run = comp_para.add_run(f"{job['company']}, {job['city']}, {job['state']}")
+        comp_run = comp_para.add_run(
+            ", ".join(filter(None, [job.get('company', ''), job.get('city', ''), job.get('state', '')]))
+        )
         comp_run.font.name = 'Calibri'
         comp_run.font.size = Pt(11)
         comp_run.font.bold = True
         comp_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-
         # Tab to date
         comp_para.add_run("\t")
-        date_run = comp_para.add_run(job['years'])
+        date_run = comp_para.add_run(job.get('years', ''))
         date_run.font.name = 'Calibri'
         date_run.font.size = Pt(11)
         date_run.font.bold = True
         date_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-
         # Job title (italic and colored)
         title_para = doc.add_paragraph()
         title_para.paragraph_format.space_before = Pt(0)
         title_para.paragraph_format.space_after = Pt(3)
-        title_run = title_para.add_run(job['title'])
+        title_run = title_para.add_run(job.get('title', ''))
         title_run.font.name = 'Calibri'
         title_run.font.size = Pt(11)
         title_run.font.italic = True
         title_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-
         # Bullet points
-        for bullet in job['bullets']:
+        for bullet in job.get('bullets', []):
             bullet_para = doc.add_paragraph(style='ListBullet')
             bullet_para.paragraph_format.left_indent = Inches(0.25)
             bullet_para.paragraph_format.space_before = Pt(2)
@@ -158,15 +153,14 @@ def create_resume_doc(name, summary, certifications, skills, experience, educati
     # Education entries
     for edu in education:
         univ_para = doc.add_paragraph()
-        univ_run = univ_para.add_run(edu['university'])
+        univ_run = univ_para.add_run(edu.get('university', ''))
         univ_run.font.name = 'Calibri'
         univ_run.font.size = Pt(11)
         univ_run.font.bold = True
         univ_run.font.color.rgb = rgb_color_from_hex(hex_teal)
-
         deg_para = doc.add_paragraph()
         deg_para.paragraph_format.space_before = Pt(0)
-        deg_run = deg_para.add_run(edu["degree"])
+        deg_run = deg_para.add_run(edu.get('degree', ''))
         deg_run.italic = True
         deg_run.font.name = 'Calibri'
         deg_run.font.size = Pt(11)
